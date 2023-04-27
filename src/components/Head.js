@@ -3,8 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toggleMenu } from '../utils/appSlice';
 import { useState } from 'react';
 import { YOUTUBE_KEYWORD_SEARCH, YOUTUBE_SEARCH_API } from '../utils/constants';
-import { cacheResults,showResults} from '../utils/searchSlice';
+import { cacheResults} from '../utils/searchSlice';
+import {searchResults} from '../utils/resultSlice';
 import SearchContainer from './SearchContainer';
+import { Link } from 'react-router-dom';
+
 
 const Head = () => {
 
@@ -12,6 +15,7 @@ const Head = () => {
     //console.log(searchQuery);
     const [suggestions,setSuggestions] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
+    const [searchButton, setSearchButton] = useState(false);
     
     
     // to get the cache data 
@@ -29,7 +33,7 @@ const Head = () => {
 
     useEffect(() => {
         //API CALL
-        console.log(searchQuery);
+        //console.log(searchQuery);
        
    
         //make an api call after every key press
@@ -40,9 +44,8 @@ const Head = () => {
                 setSuggestions(searchCache[searchQuery]);
             }else{
                 getSearchSuggestions()
-                showSearchSuggestions()
+                //showSearchSuggestions()
             }
-         
         },200);
         
         return () => {
@@ -87,7 +90,6 @@ const Head = () => {
         const json = await data.json();
         console.log(json[1]);
         setSuggestions(json[1]);
-
         //update cache 
         dispatch(cacheResults({
             [searchQuery] : json[1],
@@ -99,17 +101,20 @@ const Head = () => {
         const data = await fetch(YOUTUBE_KEYWORD_SEARCH+searchQuery);
         const json = await data.json();
         console.log(json.items);
-        dispatch(showResults());
+        //dispatch(showResults());
     }
 
     const showSearchResults =() => {
         console.log("inside search functon")
-        return (
-            <>
-             <SearchContainer q={searchQuery} />
-            </>
-        )
+        dispatch(searchResults(
+            {
+                search: true,
+                query: searchQuery,
+            }
+            )
+            )
     }
+
 
 
     const toggleMenuHandler = () => {
@@ -143,7 +148,13 @@ const Head = () => {
                     onFocus={() => setShowSuggestions(true)}
                     onBlur = {() => setShowSuggestions(false)}
             />
-            <button className="border border-gray-400 px-5 py-2 rounded-r-full bg-gray-100" onClick={() => showSearchResults()}>🔍</button>
+            <button className="border border-gray-400 px-5 py-2 rounded-r-full bg-gray-100" onClick={() => dispatch(searchResults(
+            {
+                isSearch: true,
+                searchQuery: searchQuery,
+            }
+            )
+            )}>🔍</button>
         </div>
         {showSuggestions && 
            (<div className="fixed bg-white py-2 px-2 w-[37rem] shadow-lg rounded-lg border border-gray-100">
