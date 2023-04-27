@@ -14,9 +14,9 @@ const MainContainer = () => {
   return (
     <div className='col-span-11'>
         <ButtonList/>
-      {/* { isSearch ? <SearchContainer q={searchQuery} /> :
-        <VideoContainer/> } */}
-         <VideoContainer/>
+      { isSearch ? <SearchContainer q={searchQuery} /> :
+        <VideoContainer/> }
+         {/* <VideoContainer/> */}
          {/* <VideoContainer /> */}
     </div>
   )
